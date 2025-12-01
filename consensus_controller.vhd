@@ -3,10 +3,88 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity consensus_controller is
-  port (
-  );
-end entity;
+    Port (
+        clk      : in  std_logic;
+        reset    : in  std_logic;
+        minerA_found : in  std_logic;
+        minerA_block : in  std_logic_vector(66 downto 0);
+        minerA_id    : in  std_logic_vector(7 downto 0);
+        minerB_found : in  std_logic;
+        minerB_block : in  std_logic_vector(66 downto 0);
+        minerB_id    : in  std_logic_vector(7 downto 0);
+        current_head_idx : in  std_logic_vector(2 downto 0);
+        write_en     : out std_logic;
+        write_idx    : out std_logic_vector(2 downto 0);
+        write_data   : out std_logic_vector(66 downto 0);
+        head_update  : out std_logic;
+        new_head_idx : out std_logic_vector(2 downto 0);
+        winner_id    : out std_logic_vector(7 downto 0);
+        wallet_deposit_req  : out std_logic;
+        wallet_amount_out   : out std_logic_vector(31 downto 0);
+        wallet_load_req     : out std_logic;
+        wallet_id_out       : out std_logic_vector(15 downto 0)
+    );
+end consensus_controller;
 
-architecture rtl of consensus_controller is
 
-end architecture;
+architecture Behavioral of consensus_controller is
+
+    signal next_idx : unsigned(2 downto 0);
+    signal block_reward : unsigned(31 downto 0) := to_unsigned(1, 32); -- reward 1 token
+
+begin
+
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                write_en      <= '0';
+                head_update   <= '0';
+                write_data    <= (others => '0');
+                write_idx     <= "000";
+                new_head_idx  <= "000";
+                winner_id     <= (others => '0');
+
+                wallet_deposit_req <= '0';
+                wallet_amount_out  <= (others => '0');
+                wallet_load_req    <= '0';
+                wallet_id_out      <= (others => '0');
+
+            else
+                write_en      <= '0';
+                head_update   <= '0';
+                wallet_deposit_req <= '0';
+                wallet_load_req    <= '0';
+
+                next_idx <= unsigned(current_head_idx) + 1;
+                if minerA_found = '1' then
+                    -- Blockchain write
+                    write_en     <= '1';
+                    write_idx    <= std_logic_vector(next_idx);
+                    write_data   <= minerA_block;
+                    new_head_idx <= std_logic_vector(next_idx);
+                    head_update  <= '1';
+                    winner_id    <= minerA_id;
+                    wallet_id_out      <= "00000000" & minerA_id;
+                    wallet_amount_out  <= std_logic_vector(block_reward);
+                    wallet_load_req    <= '1';
+                    wallet_deposit_req <= '1';
+                elsif minerB_found = '1' then
+                    write_en     <= '1';
+                    write_idx    <= std_logic_vector(next_idx);
+                    write_data   <= minerB_block;
+                    new_head_idx <= std_logic_vector(next_idx);
+                    head_update  <= '1';
+                    winner_id    <= minerB_id;
+                    wallet_id_out      <= "00000000" & minerB_id;
+                    wallet_amount_out  <= std_logic_vector(block_reward);
+                    wallet_load_req    <= '1';
+                    wallet_deposit_req <= '1';
+                end if;
+
+            end if;
+        end if;
+    end process;
+
+end Behavioral;
+

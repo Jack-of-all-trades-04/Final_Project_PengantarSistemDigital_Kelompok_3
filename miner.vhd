@@ -1,12 +1,65 @@
-library ieee; 
-use ieee.std_logic_1164.all; 
-use ieee.numeric_std.all;
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+use work.block_header.all;  
 
 entity miner is
-  port (
-  );
-end entity;
+    Port (
+        clk               : in  std_logic;
+        reset             : in  std_logic;
+        prev_header_in    : in  std_logic_vector(66 downto 0);
+        miner_id_in       : in  std_logic_vector(7 downto 0);
+        target_bits       : in  std_logic_vector(63 downto 0);
+        block_found       : out std_logic;
+        mined_block_out   : out std_logic_vector(66 downto 0)
+    );
+end miner;
 
-architecture rtl of miner is
+architecture Behavioral of miner is
 
-end architecture;
+    signal current_header  : block_header_t;
+    signal new_header      : block_header_t;
+    signal nonce           : unsigned(15 downto 0) := (others => '0');
+    signal hash_input      : std_logic_vector(63 downto 0);
+    signal hash_result     : std_logic_vector(63 downto 0);
+    signal block_valid     : std_logic := '0';
+    signal timestamp_counter : unsigned(23 downto 0) := (others => '0');
+
+begin
+    hash_input <= make_hash_input(new_header);
+    hash64_inst : entity work.hash64
+        port map(
+            data_input => hash_input,
+            hash_out   => hash_result
+        );
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                nonce <= (others => '0');
+                block_valid <= '0';
+		timestamp_counter <= (others => '0');
+
+            else
+                current_header <= unpack_header(prev_header_in);
+		timestamp_counter <= timestamp_counter + 1;
+                new_header.prev_index    <= prev_header_in(66 downto 64);
+                new_header.miner_id      <= miner_id_in;
+               new_header.timestamp     <= std_logic_vector(timestamp_counter);
+                new_header.nonce         <= std_logic_vector(nonce);
+                new_header.hash_fragment <= hash_result(15 downto 0);
+                if unsigned(hash_result) < unsigned(target_bits) then
+                    block_valid <= '1';
+                else
+                    nonce <= nonce + 1;
+                end if;
+
+            end if;
+        end if;
+    end process;
+
+    block_found     <= block_valid;
+    mined_block_out <= pack_header(new_header);
+
+end Behavioral;
+

@@ -1,6 +1,7 @@
 m255
 K4
 z2
+!s11e MIXED_VERSIONS
 13
 !s112 1.1
 !i10d 8192
@@ -8,3 +9,424 @@ z2
 !i10f 100
 cModel Technology
 dC:/Kuliah/PSD/Final Project
+Pblock_header
+Z0 DPx4 ieee 11 numeric_std 0 22 aU^R8eGcicLcUFIaBQSL>3
+Z1 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z2 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 37
+Z3 w1764599881
+Z4 dC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3
+Z5 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/block_header.vhd
+Z6 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/block_header.vhd
+l0
+L5 1
+Va[Xld^:RD8SPJWj@Bn?SD0
+!s100 LWRFUgbPL`V@f`OEjoEoe2
+Z7 OV;C;2020.1;71
+32
+b1
+Z8 !s110 1764599884
+!i10b 1
+Z9 !s108 1764599884.000000
+Z10 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/block_header.vhd|
+Z11 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/block_header.vhd|
+!i113 1
+Z12 o-work work -2002 -explicit
+Z13 tExplicit 1 CvgOpt 0
+Bbody
+Z14 DPx4 work 12 block_header 0 22 a[Xld^:RD8SPJWj@Bn?SD0
+R0
+R1
+R2
+!i122 37
+l0
+Z15 L20 1
+VkEI1Kbe^9S<;FLgTSIQzM3
+!s100 1gAB9emQ6cUBXHRZc>N0j3
+R7
+32
+R8
+!i10b 1
+R9
+R10
+R11
+!i113 1
+R12
+R13
+Pblock_header_pkg
+R0
+R1
+R2
+!i122 28
+Z16 w1764598983
+R4
+R5
+R6
+l0
+L5 1
+VR42`Q^[NYVeEJMR=CdaJc3
+!s100 gAzi45S8`88a@=lSX]AGm3
+R7
+32
+b1
+Z17 !s110 1764599601
+!i10b 1
+Z18 !s108 1764599601.000000
+R10
+R11
+!i113 1
+R12
+R13
+Bbody
+DPx4 work 16 block_header_pkg 0 22 R42`Q^[NYVeEJMR=CdaJc3
+R0
+R1
+R2
+!i122 28
+l0
+R15
+VUn6<mDX7?iI1W<0jFTgJl3
+!s100 U_hI=`2HmX`7=FUUk3nba3
+R7
+32
+R17
+!i10b 1
+R18
+R10
+R11
+!i113 1
+R12
+R13
+Eblockchain_storage
+Z19 w1764599122
+R0
+R1
+R2
+!i122 38
+R4
+Z20 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd
+Z21 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd
+l0
+L5 1
+V`b``8SVMYlQCU1ciVahPJ3
+!s100 zG^]d?5DlmZ5:iCJUk;?`0
+R7
+32
+Z22 !s110 1764599885
+!i10b 1
+Z23 !s108 1764599885.000000
+Z24 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd|
+Z25 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd|
+!i113 1
+R12
+R13
+Artl
+R0
+R1
+R2
+Z26 DEx4 work 18 blockchain_storage 0 22 `b``8SVMYlQCU1ciVahPJ3
+!i122 38
+l26
+L21 27
+Vc?;HmaC;OY_P5Y_cTE^411
+!s100 P<F;D^iHN15@JE22:f89W2
+R7
+32
+R22
+!i10b 1
+R23
+R24
+R25
+!i113 1
+R12
+R13
+Econsensus_controller
+Z27 w1764601353
+R0
+R1
+R2
+!i122 50
+R4
+Z28 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd
+Z29 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd
+l0
+L5 1
+Vz0i4dHK`TlzEU;lbi=zDX1
+!s100 =^KFbkB3dn7Q5]D=JK]VH2
+R7
+32
+Z30 !s110 1764601357
+!i10b 1
+Z31 !s108 1764601357.000000
+Z32 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd|
+Z33 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd|
+!i113 1
+R12
+R13
+Abehavioral
+R0
+R1
+R2
+Z34 DEx4 work 20 consensus_controller 0 22 z0i4dHK`TlzEU;lbi=zDX1
+!i122 50
+l35
+L30 60
+VdM;D86e3S;K:9D_c;[9dd2
+!s100 BP<QD0;GLVC_AG>K^bGmV0
+R7
+32
+R30
+!i10b 1
+R31
+R32
+R33
+!i113 1
+R12
+R13
+Ehash64
+Z35 w1764598439
+R0
+R1
+R2
+!i122 39
+R4
+Z36 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd
+Z37 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd
+l0
+L5 1
+V9L<g>9D9>>eYT^>YKjjdi1
+!s100 UI2DIVNfZP7ceUVbM@RBL3
+R7
+32
+R22
+!i10b 1
+R23
+Z38 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd|
+Z39 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd|
+!i113 1
+R12
+R13
+Artl
+R0
+R1
+R2
+Z40 DEx4 work 6 hash64 0 22 9L<g>9D9>>eYT^>YKjjdi1
+!i122 39
+l29
+L12 42
+VlLHii5QjLPBei=OY36Cn:3
+!s100 YdNg?a^WgcWOaZ@=PR5iE3
+R7
+32
+R22
+!i10b 1
+R23
+R38
+R39
+!i113 1
+R12
+R13
+Eminer
+Z41 w1764600617
+R14
+R0
+R1
+R2
+!i122 47
+R4
+Z42 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/miner.vhd
+Z43 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/miner.vhd
+l0
+L6 1
+VQW=oPIh@BTZ9zBe5_jXZ]0
+!s100 3QDiOh[YjP_RW?0_^fd>l1
+R7
+32
+Z44 !s110 1764600620
+!i10b 1
+Z45 !s108 1764600620.000000
+Z46 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/miner.vhd|
+Z47 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/miner.vhd|
+!i113 1
+R12
+R13
+Abehavioral
+R40
+R14
+R0
+R1
+R2
+Z48 DEx4 work 5 miner 0 22 QW=oPIh@BTZ9zBe5_jXZ]0
+!i122 47
+l28
+L18 47
+V6TH;E16A@@]lD:dYZFCjJ1
+!s100 R_iMRGRB]E8cSLc>@<3o;0
+R7
+32
+R44
+!i10b 1
+R45
+R46
+R47
+!i113 1
+R12
+R13
+Etb_hash64
+Z49 w1764599597
+R0
+R1
+R2
+!i122 41
+R4
+Z50 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64_tb.vhd
+Z51 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64_tb.vhd
+l0
+L5 1
+V;e7Lh3ZooVS`Czl=DLf_a2
+!s100 SQ_QYaQQkcnMYO>fZCQ053
+R7
+32
+Z52 !s110 1764599886
+!i10b 1
+Z53 !s108 1764599886.000000
+Z54 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64_tb.vhd|
+Z55 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64_tb.vhd|
+!i113 1
+R12
+R13
+Asim
+R40
+R0
+R1
+R2
+DEx4 work 9 tb_hash64 0 22 ;e7Lh3ZooVS`Czl=DLf_a2
+!i122 41
+l13
+L8 35
+Vi^TKe=`Faz@Nb?Xn^IS1e0
+!s100 4`k2hcL61Q?MUo6QGaLP`1
+R7
+32
+R52
+!i10b 1
+R53
+R54
+R55
+!i113 1
+R12
+R13
+Etop
+Z56 w1764601629
+R0
+R1
+R2
+!i122 51
+R4
+Z57 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd
+Z58 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd
+l0
+L5 1
+VjePkif7]jAFj?LP0LMZDV2
+!s100 lc30YWUz=hDQBo9ji@OcP2
+R7
+32
+Z59 !s110 1764601632
+!i10b 1
+Z60 !s108 1764601632.000000
+Z61 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd|
+Z62 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd|
+!i113 1
+R12
+R13
+Astructural
+Z63 DEx4 work 6 wallet 0 22 NgDEj0RBSTQUT2h0@_5A62
+R34
+R14
+R48
+R26
+R0
+R1
+R2
+DEx4 work 3 top 0 22 jePkif7]jAFj?LP0LMZDV2
+!i122 51
+l43
+L12 112
+V?hc@`KX_iVdF4R^>C;=[L2
+!s100 6PmP6Q=o<ZJ`MPW9eGY1j3
+R7
+32
+R59
+!i10b 1
+R60
+R61
+R62
+!i113 1
+R12
+R13
+Etop_tb
+w1764601829
+R0
+R1
+R2
+!i122 52
+R4
+8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd
+FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd
+l0
+L5 1
+VF]ZA?V8Ib]AK1Cd[IRJ4:2
+!s100 9G@2h:>J7mjJ_L@XUYfV;0
+R7
+32
+!s110 1764601832
+!i10b 1
+!s108 1764601832.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd|
+!s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd|
+!i113 1
+R12
+R13
+Ewallet
+Z64 w1764600901
+R0
+R1
+R2
+!i122 49
+R4
+Z65 8C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/wallet.vhd
+Z66 FC:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/wallet.vhd
+l0
+L5 1
+VNgDEj0RBSTQUT2h0@_5A62
+!s100 kl>4JR`nQHWK?EmLf5mc40
+R7
+32
+Z67 !s110 1764600904
+!i10b 1
+Z68 !s108 1764600904.000000
+Z69 !s90 -reportprogress|300|-work|work|-2002|-explicit|-stats=none|C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/wallet.vhd|
+Z70 !s107 C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/wallet.vhd|
+!i113 1
+R12
+R13
+Abehavioral
+R0
+R1
+R2
+R63
+!i122 49
+l30
+L24 43
+VQ^aXfM6EXcf[k0SlK;f;_2
+!s100 Mce`oYd59m:V:hBTiTkCX0
+R7
+32
+R67
+!i10b 1
+R68
+R69
+R70
+!i113 1
+R12
+R13

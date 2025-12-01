@@ -1,15 +1,21 @@
 # Final Project Pengantar Sistem Digital Kelompok 3
-# "Simulasi Cryptocurrency 67-bit (Proyek VHDL)"
+Anggota :
+- Arya Wibawa Atmanegara (2406420431)
+- Ganendra Garda Pratama (2306250642)
+- Novan Agung Wicaksono (2406401294)
+- Zulfahmi Fajri (2406345425)
+
+# "Simulasi Cryptocurrency 67-bit"
 
 ## Ringkasan
-Proyek ini adalah **simulasi blockchain + cryptocurrency sederhana** yang dirancang untuk **implementasi FPGA/VHDL**. Sistem ini menggunakan:
+Proyek ini adalah simulasi blockchain + cryptocurrency sederhana yang dirancang untuk pengimplementasian FPGA/VHDL. Sistem ini menggunakan:
 * **Header Blok 67-bit**
-* **Hash 64-bit kustom** (disederhanakan agar mudah dibuat di hardware)
-* **3-bit Linear Linking** (referensi blok sebelumnya)
+* **Hash 64-bit kustom** (Yang telah disederhanakan agar mudah dibuat)
+* **3-bit Linear Linking** (Untuk referensi blok sebelumnya)
 * **Proof-of-Work mining** menggunakan pencarian **nonce**
 * **Dua miner (Wallet A & Wallet B)** yang bersaing membuat blok baru
 * **Reward 1 coin** untuk setiap blok baru yang berhasil ditambang
-Tujuan proyek ini adalah mempelajari cara kerja dasar cryptocurrency: mining, linking, validasi blok, konsensus, dan manajemen saldo dalam bentuk yang sederhana sehingga bisa diterapkan pada FPGA atau simulator VHDL.
+Tujuan proyek ini adalah mempelajari cara kerja dasar cryptocurrency: mining, linking, validasi blok, konsensus, dan manajemen saldo dalam bentuk yang sederhana yang bisa diterapkan pada FPGA atau simulator VHDL.
 ---
 
 # 1. Arsitektur Sistem
@@ -68,8 +74,8 @@ Hash harus dimulai dengan 6 bit nol.
 ---
 
 # 4. Tingkat Kesulitan (Difficulty)
-Difficulty dapat dibuat sangat ringan:
-* Hash harus memiliki 6–8 bit nol di bagian atas
+Difficulty akan dibuat mudah karena untuk hanya simulasi:
+* Hash memiliki 6–8 bit nol di bagian atas
 * Atau hash mod 32 = 0
 ---
 
@@ -86,7 +92,7 @@ Ketika miner menang:
 ---
 
 # 6. Struktur File VHDL
-Berikut adalah struktur file proyek:
+Berikut adalah struktur file proyek yang akan dibuat dan dipakai:
 ### `hash64.vhd`
 * Mengimplementasikan fungsi hash 64-bit sederhana
 * Menggunakan operasi XOR, rotasi, penjumlahan, dsb.
@@ -113,7 +119,7 @@ Berikut adalah struktur file proyek:
 * Testbench untuk simulasi mining
 ---
 
-# 7. Alur Mining Contoh
+# 7. Alur Mining Contoh Untuk Testbench
 1. Kedua miner membaca header blok sebelumnya
 2. Kedua miner memulai nonce dari 0
 3. Mereka menghitung:
