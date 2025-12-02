@@ -30,35 +30,41 @@ end consensus_controller;
 architecture Behavioral of consensus_controller is
 
     signal next_idx : unsigned(2 downto 0);
-    signal block_reward : unsigned(31 downto 0) := to_unsigned(1, 32); -- reward 1 token
+    signal block_reward : unsigned(31 downto 0) := to_unsigned(1, 32);
 
 begin
 
-    process(clk)
-    begin
-        if rising_edge(clk) then
-            if reset = '1' then
-                write_en      <= '0';
-                head_update   <= '0';
-                write_data    <= (others => '0');
-                write_idx     <= "000";
-                new_head_idx  <= "000";
-                winner_id     <= (others => '0');
+   process(clk)
+    variable a_hash16 : unsigned(15 downto 0);
+    variable b_hash16 : unsigned(15 downto 0);
+begin
+    if rising_edge(clk) then
+        if reset = '1' then
+            write_en      <= '0';
+            head_update   <= '0';
+            write_data    <= (others => '0');
+            write_idx     <= "000";
+            new_head_idx  <= "000";
+            winner_id     <= (others => '0');
 
-                wallet_deposit_req <= '0';
-                wallet_amount_out  <= (others => '0');
-                wallet_load_req    <= '0';
-                wallet_id_out      <= (others => '0');
+            wallet_deposit_req <= '0';
+            wallet_amount_out  <= (others => '0');
+            wallet_load_req    <= '0';
+            wallet_id_out      <= (others => '0');
 
-            else
-                write_en      <= '0';
-                head_update   <= '0';
-                wallet_deposit_req <= '0';
-                wallet_load_req    <= '0';
+        else
+            write_en      <= '0';
+            head_update   <= '0';
+            wallet_deposit_req <= '0';
+            wallet_load_req    <= '0';
 
-                next_idx <= unsigned(current_head_idx) + 1;
-                if minerA_found = '1' then
-                    -- Blockchain write
+            next_idx <= unsigned(current_head_idx) + 1;
+
+            if minerA_found = '1' and minerB_found = '1' then
+                a_hash16 := unsigned(minerA_block(15 downto 0));
+                b_hash16 := unsigned(minerB_block(15 downto 0));
+
+                if a_hash16 <= b_hash16 then
                     write_en     <= '1';
                     write_idx    <= std_logic_vector(next_idx);
                     write_data   <= minerA_block;
@@ -69,7 +75,7 @@ begin
                     wallet_amount_out  <= std_logic_vector(block_reward);
                     wallet_load_req    <= '1';
                     wallet_deposit_req <= '1';
-                elsif minerB_found = '1' then
+                else
                     write_en     <= '1';
                     write_idx    <= std_logic_vector(next_idx);
                     write_data   <= minerB_block;
@@ -82,9 +88,34 @@ begin
                     wallet_deposit_req <= '1';
                 end if;
 
+            elsif minerA_found = '1' then
+                write_en     <= '1';
+                write_idx    <= std_logic_vector(next_idx);
+                write_data   <= minerA_block;
+                new_head_idx <= std_logic_vector(next_idx);
+                head_update  <= '1';
+                winner_id    <= minerA_id;
+                wallet_id_out      <= "00000000" & minerA_id;
+                wallet_amount_out  <= std_logic_vector(block_reward);
+                wallet_load_req    <= '1';
+                wallet_deposit_req <= '1';
+
+            elsif minerB_found = '1' then
+                write_en     <= '1';
+                write_idx    <= std_logic_vector(next_idx);
+                write_data   <= minerB_block;
+                new_head_idx <= std_logic_vector(next_idx);
+                head_update  <= '1';
+                winner_id    <= minerB_id;
+                wallet_id_out      <= "00000000" & minerB_id;
+                wallet_amount_out  <= std_logic_vector(block_reward);
+                wallet_load_req    <= '1';
+                wallet_deposit_req <= '1';
             end if;
+
         end if;
-    end process;
+    end if;
+end process;
 
 end Behavioral;
 

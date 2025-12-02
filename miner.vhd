@@ -1,65 +1,110 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
-use work.block_header.all;  
+use work.block_header.all; 
 
 entity miner is
-    Port (
-        clk               : in  std_logic;
-        reset             : in  std_logic;
-        prev_header_in    : in  std_logic_vector(66 downto 0);
-        miner_id_in       : in  std_logic_vector(7 downto 0);
-        target_bits       : in  std_logic_vector(63 downto 0);
-        block_found       : out std_logic;
-        mined_block_out   : out std_logic_vector(66 downto 0)
+    port(
+        clk             : in  std_logic;
+        reset           : in  std_logic;
+        prev_header_in  : in  std_logic_vector(66 downto 0);
+        miner_id_in     : in  std_logic_vector(7 downto 0);
+        target_bits     : in  std_logic_vector(63 downto 0);
+
+        block_found     : out std_logic;
+        mined_block_out : out std_logic_vector(66 downto 0)
     );
-end miner;
+end entity;
 
 architecture Behavioral of miner is
 
-    signal current_header  : block_header_t;
-    signal new_header      : block_header_t;
-    signal nonce           : unsigned(15 downto 0) := (others => '0');
-    signal hash_input      : std_logic_vector(63 downto 0);
-    signal hash_result     : std_logic_vector(63 downto 0);
-    signal block_valid     : std_logic := '0';
-    signal timestamp_counter : unsigned(23 downto 0) := (others => '0');
+    signal nonce       : unsigned(31 downto 0) := (others => '0');
+    signal lfsr        : std_logic_vector(15 downto 0) := (others => '1');
+
+    signal hash_val    : std_logic_vector(63 downto 0);
+    signal found_reg   : std_logic := '0';
+    signal timestamp   : unsigned(23 downto 0) := (others => '0');
+
+    signal header_struct : block_header_t;
+    signal header_packed : std_logic_vector(66 downto 0);
 
 begin
-    hash_input <= make_hash_input(new_header);
-    hash64_inst : entity work.hash64
-        port map(
-            data_input => hash_input,
-            hash_out   => hash_result
-        );
+
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                lfsr <= miner_id_in & "10101010";
+            else
+                lfsr <= lfsr(14 downto 0) & (lfsr(15) xor lfsr(13));
+            end if;
+        end if;
+    end process;
+
     process(clk)
     begin
         if rising_edge(clk) then
             if reset = '1' then
                 nonce <= (others => '0');
-                block_valid <= '0';
-		timestamp_counter <= (others => '0');
-
             else
-                current_header <= unpack_header(prev_header_in);
-		timestamp_counter <= timestamp_counter + 1;
-                new_header.prev_index    <= prev_header_in(66 downto 64);
-                new_header.miner_id      <= miner_id_in;
-               new_header.timestamp     <= std_logic_vector(timestamp_counter);
-                new_header.nonce         <= std_logic_vector(nonce);
-                new_header.hash_fragment <= hash_result(15 downto 0);
-                if unsigned(hash_result) < unsigned(target_bits) then
-                    block_valid <= '1';
-                else
-                    nonce <= nonce + 1;
-                end if;
-
+                nonce <= nonce + 1 + to_integer(unsigned(miner_id_in(1 downto 0)));
             end if;
         end if;
     end process;
 
-    block_found     <= block_valid;
-    mined_block_out <= pack_header(new_header);
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                timestamp <= (others => '0');
+            else
+                timestamp <= timestamp + 1;
+            end if;
+        end if;
+    end process;
 
-end Behavioral;
+    hash_val <= std_logic_vector(
+                    rotate_left(
+                        unsigned(prev_header_in(63 downto 0))
+                        xor resize(unsigned(lfsr & lfsr), 64)
+                        xor resize(nonce, 64),
+                        7
+                    )
+                );
+
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                found_reg <= '0';
+                header_struct.prev_index    <= (others => '0');
+                header_struct.miner_id      <= (others => '0');
+                header_struct.timestamp     <= (others => '0');
+                header_struct.nonce         <= (others => '0');
+                header_struct.hash_fragment <= (others => '0');
+                header_packed <= (others => '0');
+            else
+                if unsigned(hash_val) < unsigned(target_bits) then
+                    found_reg <= '1';
+
+                    header_struct.prev_index    <= prev_header_in(66 downto 64);
+                    header_struct.miner_id      <= miner_id_in;
+                    header_struct.timestamp     <= std_logic_vector(timestamp);
+                    header_struct.nonce         <= std_logic_vector(nonce(15 downto 0));
+                    header_struct.hash_fragment <= hash_val(15 downto 0);
+
+                    header_packed <= pack_header(header_struct);
+
+                else
+                    found_reg <= '0';
+                    -- header_packed <= (others => '0');
+                end if;
+            end if;
+        end if;
+    end process;
+
+    block_found     <= found_reg;
+    mined_block_out <= header_packed when found_reg = '1' else (others => '0');
+
+end architecture;
 

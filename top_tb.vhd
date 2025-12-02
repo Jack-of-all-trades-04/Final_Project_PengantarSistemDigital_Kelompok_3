@@ -1,0 +1,87 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity top_tb is
+end entity;
+
+architecture Behavioral of top_tb is
+
+    signal clk    : std_logic := '0';
+    signal reset  : std_logic := '1';
+
+    signal dbg_head_idx_out   : std_logic_vector(2 downto 0);
+    signal dbg_write_en       : std_logic;
+    signal dbg_write_idx      : std_logic_vector(2 downto 0);
+    signal dbg_write_data     : std_logic_vector(66 downto 0);
+
+    signal dbg_minerA_found   : std_logic;
+    signal dbg_minerB_found   : std_logic_vector(0 downto 0);
+    signal dbg_minerA_block   : std_logic_vector(66 downto 0);
+    signal dbg_minerB_block   : std_logic_vector(66 downto 0);
+    signal dbg_winner_id      : std_logic_vector(7 downto 0);
+
+    signal dbg_wallet_deposit_req : std_logic;
+    signal dbg_wallet_amount_out  : std_logic_vector(31 downto 0);
+    signal dbg_walletA_balance    : std_logic_vector(31 downto 0);
+    signal dbg_walletB_balance    : std_logic_vector(31 downto 0);
+
+begin
+
+    clk <= not clk after 5 ns;
+
+    uut : entity work.top
+        port map(
+            clk    => clk,
+            reset  => reset,
+
+            dbg_head_idx_out  => dbg_head_idx_out,
+            dbg_write_en      => dbg_write_en,
+            dbg_write_idx     => dbg_write_idx,
+            dbg_write_data    => dbg_write_data,
+
+            dbg_minerA_found  => dbg_minerA_found,
+            dbg_minerB_found  => dbg_minerB_found,
+            dbg_minerA_block  => dbg_minerA_block,
+            dbg_minerB_block  => dbg_minerB_block,
+            dbg_winner_id     => dbg_winner_id,
+
+            dbg_wallet_deposit_req => dbg_wallet_deposit_req,
+            dbg_wallet_amount_out  => dbg_wallet_amount_out,
+
+            dbg_walletA_balance => dbg_walletA_balance,
+            dbg_walletB_balance => dbg_walletB_balance
+        );
+
+    stim : process
+    begin
+
+        reset <= '1';
+        wait for 20 ns;
+        reset <= '0';
+        wait for 20 ns;
+
+        report "=== START MINING TEST ===";
+
+        report "[TEST] Miner A mining block...";
+        wait for 200 ns; 
+        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
+        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
+
+        report "[TEST] Miner B mining block...";
+        wait for 200 ns;
+
+        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
+        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
+
+        wait for 200 ns;
+
+        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
+        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
+
+        report "=== SIMULATION COMPLETE ===";
+        wait;
+    end process;
+
+end Behavioral;
+

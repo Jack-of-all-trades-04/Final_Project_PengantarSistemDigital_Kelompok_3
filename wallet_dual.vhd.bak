@@ -1,0 +1,44 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+
+entity wallet_dual is
+    port(
+        clk       : in  std_logic;
+        reset     : in  std_logic;
+        reward_A  : in  std_logic;
+        reward_B  : in  std_logic;
+        balance_A : out unsigned(31 downto 0);
+        balance_B : out unsigned(31 downto 0)
+    );
+end entity;
+
+architecture Behavioral of wallet_dual is
+
+    signal bal_A : unsigned(31 downto 0) := (others => '0');
+    signal bal_B : unsigned(31 downto 0) := (others => '0');
+
+begin
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                bal_A <= (others => '0');
+                bal_B <= (others => '0');
+            else
+                if reward_A = '1' then
+                    bal_A <= bal_A + 1;
+                end if;
+
+                if reward_B = '1' then
+                    bal_B <= bal_B + 1;
+                end if;
+            end if;
+        end if;
+    end process;
+
+    balance_A <= bal_A;
+    balance_B <= bal_B;
+
+end architecture;
+

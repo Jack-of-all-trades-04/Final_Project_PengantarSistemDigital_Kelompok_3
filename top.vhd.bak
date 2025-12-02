@@ -3,10 +3,139 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity top is
-  port (
-  );
+    port(
+        clk    : in  std_logic;
+        reset  : in  std_logic;
+
+        dbg_head_idx_out   : out std_logic_vector(2 downto 0);
+        dbg_write_en       : out std_logic;
+        dbg_write_idx      : out std_logic_vector(2 downto 0);
+        dbg_write_data     : out std_logic_vector(66 downto 0);
+
+        dbg_minerA_found   : out std_logic;
+        dbg_minerB_found   : out std_logic;
+        dbg_minerA_block   : out std_logic_vector(66 downto 0);
+        dbg_minerB_block   : out std_logic_vector(66 downto 0);
+        dbg_winner_id      : out std_logic_vector(7 downto 0);
+
+        dbg_balance_A      : out unsigned(31 downto 0);
+        dbg_balance_B      : out unsigned(31 downto 0)
+    );
 end entity;
 
-architecture rtl of top is
+architecture Structural of top is
+
+    signal head_idx_out      : std_logic_vector(2 downto 0);
+    signal current_head_idx  : std_logic_vector(2 downto 0);
+    signal read_data_dummy   : std_logic_vector(66 downto 0);
+
+    signal minerA_found_sig  : std_logic;
+    signal minerA_block_out  : std_logic_vector(66 downto 0);
+
+    signal minerB_found_sig  : std_logic;
+    signal minerB_block_out  : std_logic_vector(66 downto 0);
+
+    signal winner_id_sig     : std_logic_vector(7 downto 0);
+    signal write_en_sig      : std_logic;
+    signal write_idx_sig     : std_logic_vector(2 downto 0);
+    signal write_data_sig    : std_logic_vector(66 downto 0);
+    signal new_head_idx      : std_logic_vector(2 downto 0);
+    signal head_update       : std_logic;
+
+    signal reward_A       : std_logic;
+    signal reward_B       : std_logic;
+    signal balance_A_sig  : unsigned(31 downto 0);
+    signal balance_B_sig  : unsigned(31 downto 0);
+
+begin
+    bc_storage_inst : entity work.blockchain_storage
+        port map(
+            clk           => clk,
+            reset         => reset,
+            write_en      => write_en_sig,
+            write_idx     => write_idx_sig,
+            write_data    => write_data_sig,
+            read_idx      => head_idx_out,
+            read_data     => read_data_dummy,
+            head_idx_in   => new_head_idx,
+            head_update   => head_update,
+            head_idx_out  => head_idx_out
+        );
+
+    current_head_idx <= head_idx_out;
+
+    minerA_inst : entity work.miner
+        port map(
+            clk            => clk,
+            reset          => reset,
+            prev_header_in => read_data_dummy,
+            miner_id_in    => x"0A",
+            target_bits    => (others => '1'),
+            block_found    => minerA_found_sig,
+            mined_block_out => minerA_block_out
+        );
+
+    minerB_inst : entity work.miner
+        port map(
+            clk            => clk,
+            reset          => reset,
+            prev_header_in => read_data_dummy,
+            miner_id_in    => x"0B",
+            target_bits    => (others => '1'),
+            block_found    => minerB_found_sig,
+            mined_block_out => minerB_block_out
+        );
+
+    consensus_inst : entity work.consensus_controller
+        port map(
+            clk               => clk,
+            reset             => reset,
+            minerA_found      => minerA_found_sig,
+            minerA_block      => minerA_block_out,
+            minerA_id         => x"0A",
+            minerB_found      => minerB_found_sig,
+            minerB_block      => minerB_block_out,
+            minerB_id         => x"0B",
+            current_head_idx  => current_head_idx,
+            write_en          => write_en_sig,
+            write_idx         => write_idx_sig,
+            write_data        => write_data_sig,
+            head_update       => head_update,
+            new_head_idx      => new_head_idx,
+            winner_id         => winner_id_sig,
+
+            wallet_deposit_req => open,
+            wallet_amount_out  => open,
+            wallet_load_req    => open,
+            wallet_id_out      => open
+        );
+
+    reward_A <= '1' when winner_id_sig = x"0A" and write_en_sig = '1' else '0';
+    reward_B <= '1' when winner_id_sig = x"0B" and write_en_sig = '1' else '0';
+
+    wallet_inst : entity work.wallet_dual
+        port map(
+            clk       => clk,
+            reset     => reset,
+            reward_A  => reward_A,
+            reward_B  => reward_B,
+            balance_A => balance_A_sig,
+            balance_B => balance_B_sig
+        );
+
+    dbg_head_idx_out <= head_idx_out;
+    dbg_write_en     <= write_en_sig;
+    dbg_write_idx    <= write_idx_sig;
+    dbg_write_data   <= write_data_sig;
+
+    dbg_minerA_found <= minerA_found_sig;
+    dbg_minerB_found <= minerB_found_sig;
+    dbg_minerA_block <= minerA_block_out;
+    dbg_minerB_block <= minerB_block_out;
+    dbg_winner_id    <= winner_id_sig;
+
+    dbg_balance_A    <= balance_A_sig;
+    dbg_balance_B    <= balance_B_sig;
 
 end architecture;
+
