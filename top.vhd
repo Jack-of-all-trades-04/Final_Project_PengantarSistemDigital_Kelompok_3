@@ -1,6 +1,7 @@
 library ieee; 
 use ieee.std_logic_1164.all; 
 use ieee.numeric_std.all;
+use work.block_header.all;
 
 entity top is
     port(
@@ -13,7 +14,7 @@ entity top is
         dbg_write_data     : out std_logic_vector(66 downto 0);
 
         dbg_minerA_found   : out std_logic;
-        dbg_minerB_found   : out std_logic_vector(0 downto 0);
+        dbg_minerB_found   : out std_logic;
         dbg_minerA_block   : out std_logic_vector(66 downto 0);
         dbg_minerB_block   : out std_logic_vector(66 downto 0);
         dbg_winner_id      : out std_logic_vector(7 downto 0);
@@ -21,79 +22,140 @@ entity top is
         dbg_wallet_deposit_req : out std_logic;
         dbg_wallet_amount_out  : out std_logic_vector(31 downto 0);
         dbg_walletA_balance    : out std_logic_vector(31 downto 0);
-        dbg_walletB_balance    : out std_logic_vector(31 downto 0)
+        dbg_walletB_balance    : out std_logic_vector(31 downto 0);
+
+        dbg_block_mem      : out block_array_t;
+        dbg_tx_amount_mem  : out amount_array_t;
+        dbg_tx_type_mem    : out type_array_t;
+
+        tx_req_in    : in std_logic;
+        tx_from_in   : in std_logic;
+        tx_amount_in : in std_logic_vector(31 downto 0)
     );
 end entity;
 
 architecture Structural of top is
+    
+    signal cons_write_en       : std_logic := '0';
+    signal cons_write_idx      : std_logic_vector(2 downto 0) := (others => '0');
+    signal cons_write_data     : std_logic_vector(66 downto 0) := (others => '0');
+    signal cons_head_update    : std_logic := '0';
+    signal cons_new_head_idx   : std_logic_vector(2 downto 0) := (others => '0');
 
-    signal head_idx_out      : std_logic_vector(2 downto 0);
-    signal current_head_idx  : std_logic_vector(2 downto 0);
-    signal read_data_dummy   : std_logic_vector(66 downto 0);
+    signal tx_write_en         : std_logic := '0';
+    signal tx_write_idx        : std_logic_vector(2 downto 0) := (others => '0');
+    signal tx_write_data       : std_logic_vector(66 downto 0) := (others => '0');
+    signal tx_write_amount     : std_logic_vector(31 downto 0) := (others => '0');
+    signal tx_write_type       : std_logic_vector(1 downto 0) := (others => '0');
+    signal tx_head_update      : std_logic := '0';
+    signal tx_new_head_idx     : std_logic_vector(2 downto 0) := (others => '0');
 
-    signal minerA_prev_header : std_logic_vector(66 downto 0);
-    signal minerA_found_sig   : std_logic;
-    signal minerA_block_out   : std_logic_vector(66 downto 0);
+    signal final_write_en      : std_logic;
+    signal final_write_idx     : std_logic_vector(2 downto 0);
+    signal final_write_data    : std_logic_vector(66 downto 0);
+    signal final_write_amount  : std_logic_vector(31 downto 0);
+    signal final_write_type    : std_logic_vector(1 downto 0);
+    signal final_head_update   : std_logic;
+    signal final_new_head_idx  : std_logic_vector(2 downto 0);
+
+    signal head_idx_out      : std_logic_vector(2 downto 0) := (others => '0');
+    signal current_head_idx  : std_logic_vector(2 downto 0) := (others => '0');
+    signal read_data_dummy   : std_logic_vector(66 downto 0) := (others => '0');
+    signal current_difficulty : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
+
+    signal minerA_found_sig   : std_logic := '0';
+    signal minerA_block_out   : std_logic_vector(66 downto 0) := (others => '0');
     signal minerA_id          : std_logic_vector(7 downto 0) := x"0A";
-    signal target_bits 	      : std_logic_vector(63 downto 0) := (others => '1');
+    signal minerB_found_sig   : std_logic := '0';
+    signal minerB_block_out   : std_logic_vector(66 downto 0) := (others => '0');
+    signal minerB_id          : std_logic_vector(7 downto 0) := x"0B";
 
-    signal minerB_prev_header : std_logic_vector(66 downto 0);
-    signal minerB_found_sig   : std_logic;
-    signal minerB_block_out   : std_logic_vector(66 downto 0);
-    signal minerB_id          : std_logic_vector(7 downto 0) := x"0B"; 
+    signal winner_id_sig      : std_logic_vector(7 downto 0) := (others => '0');
+    signal wallet_deposit_req_sig : std_logic := '0';
+    signal wallet_amount_out_sig  : std_logic_vector(31 downto 0) := (others => '0');
+    signal wallet_load_req_sig    : std_logic := '0';
+    signal wallet_id_out_sig      : std_logic_vector(15 downto 0) := (others => '0');
+    signal walletA_balance_sig : std_logic_vector(31 downto 0) := (others => '0');
+    signal walletB_balance_sig : std_logic_vector(31 downto 0) := (others => '0');
+    signal tx_req_sig      : std_logic := '0';
+    signal tx_from_sig     : std_logic := '0';
+    signal tx_amount_sig   : std_logic_vector(31 downto 0) := (others => '0');
+    signal tx_success_sig  : std_logic := '0';
 
-    signal write_en_sig       : std_logic;
-    signal write_idx_sig      : std_logic_vector(2 downto 0);
-    signal write_data_sig     : std_logic_vector(66 downto 0);
-    signal head_update        : std_logic;
-    signal new_head_idx       : std_logic_vector(2 downto 0);
-    signal winner_id_sig      : std_logic_vector(7 downto 0);
-
-    signal wallet_deposit_req_sig : std_logic;
-    signal wallet_amount_out_sig  : std_logic_vector(31 downto 0);
-    signal wallet_load_req_sig    : std_logic;
-    signal wallet_id_out_sig      : std_logic_vector(15 downto 0);
-
-    signal walletA_balance_sig : std_logic_vector(31 downto 0);
-    signal walletB_balance_sig : std_logic_vector(31 downto 0);
+    signal timestamp_counter : unsigned(23 downto 0) := (others => '0');
 
 begin
+
+    tx_req_sig    <= tx_req_in;
+    tx_from_sig   <= tx_from_in;
+    tx_amount_sig <= tx_amount_in;
+
+    process(tx_write_en, tx_write_idx, tx_write_data, tx_write_amount, tx_write_type, tx_head_update, tx_new_head_idx,
+            cons_write_en, cons_write_idx, cons_write_data, cons_head_update, cons_new_head_idx)
+    begin
+        if tx_write_en = '1' then
+            final_write_en      <= '1';
+            final_write_idx     <= tx_write_idx;
+            final_write_data    <= tx_write_data;
+            final_write_amount  <= tx_write_amount;
+            final_write_type    <= tx_write_type;
+            final_head_update   <= tx_head_update;
+            final_new_head_idx  <= tx_new_head_idx;
+        else
+            final_write_en      <= cons_write_en;
+            final_write_idx     <= cons_write_idx;
+            final_write_data    <= cons_write_data;
+            final_write_amount  <= (others => '0');
+            final_write_type    <= "00";           
+            final_head_update   <= cons_head_update;
+            final_new_head_idx  <= cons_new_head_idx;
+        end if;
+    end process;
+
     bc_storage_inst : entity work.blockchain_storage
         port map(
-            clk           => clk,
-            reset         => reset,
-            write_en      => write_en_sig,
-            write_idx     => write_idx_sig,
-            write_data    => write_data_sig,
-            read_idx      => head_idx_out,
-            read_data     => read_data_dummy,
-            head_idx_in   => new_head_idx,
-            head_update   => head_update,
-            head_idx_out  => head_idx_out
+            clk            => clk,
+            reset          => reset,
+            write_en       => final_write_en,
+            write_idx      => final_write_idx,
+            write_data     => final_write_data,
+            write_tx_amount=> final_write_amount,
+            write_tx_type  => final_write_type,
+            read_idx       => head_idx_out, 
+            read_data      => read_data_dummy,
+            read_tx_amount => open,
+            read_tx_type   => open,
+            head_idx_in    => final_new_head_idx,
+            head_update    => final_head_update,
+            head_idx_out   => head_idx_out,
+            
+            debug_block_mem     => dbg_block_mem,
+            debug_tx_amount_mem => dbg_tx_amount_mem,
+            debug_tx_type_mem   => dbg_tx_type_mem
         );
-
+    
     current_head_idx <= head_idx_out;
-    minerA_prev_header <= read_data_dummy;
-    minerB_prev_header <= read_data_dummy;
 
     minerA_inst : entity work.miner
         port map(
             clk            => clk,
             reset          => reset,
-            prev_header_in => minerA_prev_header,
+            prev_header_in => read_data_dummy,
+	    current_idx_in => current_head_idx,
             miner_id_in    => minerA_id,
-            target_bits    => target_bits,
+            target_bits    => current_difficulty,
             block_found    => minerA_found_sig,
             mined_block_out => minerA_block_out
         );
-
+        
     minerB_inst : entity work.miner
         port map(
             clk            => clk,
             reset          => reset,
-            prev_header_in => minerB_prev_header,
+            prev_header_in => read_data_dummy,
+	    current_idx_in => current_head_idx,
             miner_id_in    => minerB_id,
-            target_bits    => target_bits,
+            target_bits    => current_difficulty,
             block_found    => minerB_found_sig,
             mined_block_out => minerB_block_out
         );
@@ -109,40 +171,95 @@ begin
             minerB_block      => minerB_block_out,
             minerB_id         => minerB_id,
             current_head_idx  => current_head_idx,
-            write_en          => write_en_sig,
-            write_idx         => write_idx_sig,
-            write_data        => write_data_sig,
-            head_update       => head_update,
-            new_head_idx      => new_head_idx,
+            
+            write_en          => cons_write_en,
+            write_idx         => cons_write_idx,
+            write_data        => cons_write_data,
+            head_update       => cons_head_update,
+            new_head_idx      => cons_new_head_idx,
+            
             winner_id         => winner_id_sig,
-
             wallet_deposit_req => wallet_deposit_req_sig,
             wallet_amount_out  => wallet_amount_out_sig,
             wallet_load_req    => wallet_load_req_sig,
             wallet_id_out      => wallet_id_out_sig
         );
 
-    wallet_inst : entity work.wallet_dual
+    wallet_inst : entity work.wallet
         port map(
             clk                 => clk,
             reset               => reset,
-            wallet_load_req     => wallet_load_req_sig,
             wallet_id_in        => wallet_id_out_sig,
+            wallet_load_req     => wallet_load_req_sig,
             deposit_req         => wallet_deposit_req_sig,
             amount_in           => wallet_amount_out_sig,
-
+            tx_req              => tx_req_sig,
+            tx_from             => tx_from_sig,
+            tx_amount_in        => tx_amount_sig,
+            tx_success_out      => tx_success_sig,
             walletA_balance_out => walletA_balance_sig,
-            walletB_balance_out => walletB_balance_sig
+            walletB_balance_out => walletB_balance_sig,
+            last_wallet_id_out  => open,
+            valid_op_out        => open
         );
 
+    process(clk)
+        variable hdr : block_header_t;
+        variable next_idx_u : unsigned(2 downto 0);
+    begin
+        if rising_edge(clk) then
+            if reset = '1' then
+                tx_write_en <= '0';
+                tx_write_idx <= (others => '0');
+                tx_write_data <= (others => '0');
+                tx_write_amount <= (others => '0');
+                tx_write_type <= (others => '0');
+                timestamp_counter <= (others => '0');
+                tx_head_update <= '0';
+                tx_new_head_idx <= (others => '0');
+            else
+                tx_write_en <= '0'; -- default off
+                tx_head_update <= '0';
+
+                timestamp_counter <= timestamp_counter + 1;
+
+                if tx_success_sig = '1' then
+                    hdr.prev_index    := current_head_idx;
+                    
+                    if tx_from_sig = '0' then
+                        hdr.miner_id := minerA_id; -- A sent
+                        tx_write_type <= "01";
+                    else
+                        hdr.miner_id := minerB_id; -- B sent
+                        tx_write_type <= "10";
+                    end if;
+
+                    hdr.timestamp     := std_logic_vector(timestamp_counter);
+                    hdr.nonce         := tx_amount_sig(15 downto 0);
+                    hdr.hash_fragment := (others => '0');
+
+                    tx_write_data <= pack_header(hdr);
+                    tx_write_amount <= tx_amount_sig;
+
+                    next_idx_u := unsigned(current_head_idx) + 1;
+                    tx_write_idx <= std_logic_vector(next_idx_u);
+                    tx_new_head_idx <= std_logic_vector(next_idx_u);
+                    
+                    tx_head_update <= '1';
+                    tx_write_en <= '1'; -- Trigger write
+                end if;
+            end if;
+        end if;
+    end process;
+
     dbg_head_idx_out   <= head_idx_out;
-    dbg_write_en       <= write_en_sig;
-    dbg_write_idx      <= write_idx_sig;
-    dbg_write_data     <= write_data_sig;
+    dbg_write_en       <= final_write_en;
+    dbg_write_idx      <= final_write_idx;
+    dbg_write_data     <= final_write_data;
 
     dbg_minerA_found   <= minerA_found_sig;
     dbg_minerA_block   <= minerA_block_out;
-    dbg_minerB_found(0) <= minerB_found_sig;
+    dbg_minerB_found   <= minerB_found_sig;
     dbg_minerB_block   <= minerB_block_out;
     dbg_winner_id      <= winner_id_sig;
 
@@ -153,4 +270,3 @@ begin
     dbg_walletB_balance <= walletB_balance_sig;
 
 end architecture;
-

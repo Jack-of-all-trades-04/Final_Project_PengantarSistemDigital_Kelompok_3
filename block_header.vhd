@@ -11,6 +11,10 @@ package block_header is
         hash_fragment  : std_logic_vector(15 downto 0);
     end record;
 
+    type block_array_t is array (0 to 7) of std_logic_vector(66 downto 0);
+    type amount_array_t is array (0 to 7) of std_logic_vector(31 downto 0);
+    type type_array_t   is array (0 to 7) of std_logic_vector(1 downto 0);
+
     function pack_header(h : block_header_t) return std_logic_vector;
     function unpack_header(vec : std_logic_vector(66 downto 0)) return block_header_t;
     function make_hash_input(h : block_header_t) return std_logic_vector;

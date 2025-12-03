@@ -1,87 +1,126 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
+use work.block_header.all;
 
 entity top_tb is
 end entity;
 
-architecture Behavioral of top_tb is
-
+architecture sim of top_tb is
     signal clk    : std_logic := '0';
     signal reset  : std_logic := '1';
 
-    signal dbg_head_idx_out   : std_logic_vector(2 downto 0);
-    signal dbg_write_en       : std_logic;
-    signal dbg_write_idx      : std_logic_vector(2 downto 0);
-    signal dbg_write_data     : std_logic_vector(66 downto 0);
+    signal tx_req_in    : std_logic := '0';
+    signal tx_from_in   : std_logic := '0';
+    signal tx_amount_in : std_logic_vector(31 downto 0) := (others => '0');
 
-    signal dbg_minerA_found   : std_logic;
-    signal dbg_minerB_found   : std_logic_vector(0 downto 0);
-    signal dbg_minerA_block   : std_logic_vector(66 downto 0);
-    signal dbg_minerB_block   : std_logic_vector(66 downto 0);
-    signal dbg_winner_id      : std_logic_vector(7 downto 0);
-
+    signal dbg_head_idx_out       : std_logic_vector(2 downto 0);
+    signal dbg_write_en           : std_logic;
+    signal dbg_write_idx          : std_logic_vector(2 downto 0);
+    signal dbg_write_data         : std_logic_vector(66 downto 0);
+    signal dbg_minerA_found       : std_logic;
+    signal dbg_minerB_found       : std_logic;
+    signal dbg_minerA_block       : std_logic_vector(66 downto 0);
+    signal dbg_minerB_block       : std_logic_vector(66 downto 0);
+    signal dbg_winner_id          : std_logic_vector(7 downto 0);
     signal dbg_wallet_deposit_req : std_logic;
     signal dbg_wallet_amount_out  : std_logic_vector(31 downto 0);
     signal dbg_walletA_balance    : std_logic_vector(31 downto 0);
     signal dbg_walletB_balance    : std_logic_vector(31 downto 0);
+    signal dbg_block_mem          : block_array_t;
+    signal dbg_tx_amount_mem      : amount_array_t;
+    signal dbg_tx_type_mem        : type_array_t;
 
 begin
-
     clk <= not clk after 5 ns;
 
     uut : entity work.top
         port map(
-            clk    => clk,
-            reset  => reset,
-
-            dbg_head_idx_out  => dbg_head_idx_out,
-            dbg_write_en      => dbg_write_en,
-            dbg_write_idx     => dbg_write_idx,
-            dbg_write_data    => dbg_write_data,
-
-            dbg_minerA_found  => dbg_minerA_found,
-            dbg_minerB_found  => dbg_minerB_found,
-            dbg_minerA_block  => dbg_minerA_block,
-            dbg_minerB_block  => dbg_minerB_block,
-            dbg_winner_id     => dbg_winner_id,
-
+            clk   => clk,
+            reset => reset,
+            tx_req_in    => tx_req_in,
+            tx_from_in   => tx_from_in,
+            tx_amount_in => tx_amount_in,
+            dbg_head_idx_out       => dbg_head_idx_out,
+            dbg_write_en           => dbg_write_en,
+            dbg_write_idx          => dbg_write_idx,
+            dbg_write_data         => dbg_write_data,
+            dbg_minerA_found       => dbg_minerA_found,
+            dbg_minerB_found       => dbg_minerB_found,
+            dbg_minerA_block       => dbg_minerA_block,
+            dbg_minerB_block       => dbg_minerB_block,
+            dbg_winner_id          => dbg_winner_id,
             dbg_wallet_deposit_req => dbg_wallet_deposit_req,
             dbg_wallet_amount_out  => dbg_wallet_amount_out,
-
-            dbg_walletA_balance => dbg_walletA_balance,
-            dbg_walletB_balance => dbg_walletB_balance
+            dbg_walletA_balance    => dbg_walletA_balance,
+            dbg_walletB_balance    => dbg_walletB_balance,
+            dbg_block_mem          => dbg_block_mem,
+            dbg_tx_amount_mem      => dbg_tx_amount_mem,
+            dbg_tx_type_mem        => dbg_tx_type_mem
         );
 
-    stim : process
+    process
     begin
-
+        report ">>> SYSTEM STARTUP <<<";
         reset <= '1';
-        wait for 20 ns;
+        wait for 50 ns;
         reset <= '0';
-        wait for 20 ns;
-
-        report "=== START MINING TEST ===";
-
-        report "[TEST] Miner A mining block...";
-        wait for 200 ns; 
-        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
-        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
-
-        report "[TEST] Miner B mining block...";
-        wait for 200 ns;
-
-        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
-        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
-
-        wait for 200 ns;
-
-        report "Wallet A balance: " & integer'image(to_integer(unsigned(dbg_walletA_balance)));
-        report "Wallet B balance: " & integer'image(to_integer(unsigned(dbg_walletB_balance)));
-
-        report "=== SIMULATION COMPLETE ===";
+        report ">>> SYSTEM LIVE - INFINITE RUN <<<";
         wait;
     end process;
 
-end Behavioral;
+    process(clk)
+        variable current_blk_struct : block_header_t;
+        variable v_miner_id : integer;
+        variable v_nonce    : integer;
+        variable v_hash     : integer;
+        variable v_prev     : integer;
+        variable v_next     : string(1 to 4) := "NULL";
+    begin
+        if rising_edge(clk) then
+            if dbg_write_en = '1' then
 
+                current_blk_struct := unpack_header(dbg_write_data);
+                
+                v_prev     := to_integer(unsigned(current_blk_struct.prev_index));
+                v_miner_id := to_integer(unsigned(current_blk_struct.miner_id));
+                v_nonce    := to_integer(unsigned(current_blk_struct.nonce));
+                v_hash     := to_integer(unsigned(current_blk_struct.hash_fragment));
+                
+                report " ";
+                report "[NEW BLOCK MINED] ---------------------------------------------";
+                report "--> [" & 
+                       integer'image(v_prev) & "|" & 
+                       integer'image(v_miner_id) & "|" & 
+                       integer'image(v_nonce) & "|" & 
+                       integer'image(v_hash) & "|" & 
+                       "NULL" & 
+                       "] -->";
+                report "---------------------------------------------------------------";
+                report "Current Balance: A=" & integer'image(to_integer(unsigned(dbg_walletA_balance))) & 
+                       " | B=" & integer'image(to_integer(unsigned(dbg_walletB_balance)));
+            end if;
+        end if;
+    end process;
+
+    process
+    begin
+        wait until reset = '0';
+        
+        wait for 2000 ns; 
+
+        loop
+            wait for 2000 ns;
+            
+            report "[AUTO-BOT] Initiating Periodic Transfer A -> B (5 Coins)...";
+            tx_req_in    <= '1';
+            tx_from_in   <= '0'; -- A
+            tx_amount_in <= std_logic_vector(to_unsigned(5, 32));
+            wait for 20 ns;
+            tx_req_in    <= '0';
+            tx_amount_in <= (others => '0');
+            
+        end loop;
+    end process;
+
+end architecture;
