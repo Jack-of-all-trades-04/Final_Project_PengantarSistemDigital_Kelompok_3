@@ -14,14 +14,14 @@ architecture sim of top_tb is
     signal tx_from_in   : std_logic := '0';
     signal tx_amount_in : std_logic_vector(31 downto 0) := (others => '0');
 
-    signal dbg_head_idx_out       : std_logic_vector(2 downto 0);
+    signal dbg_head_idx_out       : std_logic_vector(7 downto 0);
     signal dbg_write_en           : std_logic;
-    signal dbg_write_idx          : std_logic_vector(2 downto 0);
-    signal dbg_write_data         : std_logic_vector(66 downto 0);
+    signal dbg_write_idx          : std_logic_vector(7 downto 0);
+    signal dbg_write_data         : std_logic_vector(71 downto 0);
     signal dbg_minerA_found       : std_logic;
     signal dbg_minerB_found       : std_logic;
-    signal dbg_minerA_block       : std_logic_vector(66 downto 0);
-    signal dbg_minerB_block       : std_logic_vector(66 downto 0);
+    signal dbg_minerA_block       : std_logic_vector(71 downto 0);
+    signal dbg_minerB_block       : std_logic_vector(71 downto 0);
     signal dbg_winner_id          : std_logic_vector(7 downto 0);
     signal dbg_wallet_deposit_req : std_logic;
     signal dbg_wallet_amount_out  : std_logic_vector(31 downto 0);
@@ -75,12 +75,16 @@ begin
         variable v_nonce    : integer;
         variable v_hash     : integer;
         variable v_prev     : integer;
-        variable v_next     : string(1 to 4) := "NULL";
+        variable v_curr     : integer;
+        variable v_next     : integer;
     begin
         if rising_edge(clk) then
             if dbg_write_en = '1' then
-
+                
                 current_blk_struct := unpack_header(dbg_write_data);
+                
+                v_curr := to_integer(unsigned(dbg_write_idx));
+                v_next := v_curr + 1;
                 
                 v_prev     := to_integer(unsigned(current_blk_struct.prev_index));
                 v_miner_id := to_integer(unsigned(current_blk_struct.miner_id));
@@ -88,13 +92,13 @@ begin
                 v_hash     := to_integer(unsigned(current_blk_struct.hash_fragment));
                 
                 report " ";
-                report "[NEW BLOCK MINED] ---------------------------------------------";
+                report "[NEW BLOCK WRITTEN TO IDX " & integer'image(v_curr) & "] --------------------------";
                 report "--> [" & 
-                       integer'image(v_prev) & "|" & 
+                       integer'image(v_prev) & "|" &
                        integer'image(v_miner_id) & "|" & 
                        integer'image(v_nonce) & "|" & 
                        integer'image(v_hash) & "|" & 
-                       "NULL" & 
+                       integer'image(v_next) &
                        "] -->";
                 report "---------------------------------------------------------------";
                 report "Current Balance: A=" & integer'image(to_integer(unsigned(dbg_walletA_balance))) & 
@@ -111,8 +115,6 @@ begin
 
         loop
             wait for 2000 ns;
-            
-            report "[AUTO-BOT] Initiating Periodic Transfer A -> B (5 Coins)...";
             tx_req_in    <= '1';
             tx_from_in   <= '0'; -- A
             tx_amount_in <= std_logic_vector(to_unsigned(5, 32));

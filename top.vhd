@@ -8,15 +8,15 @@ entity top is
         clk    : in  std_logic;
         reset  : in  std_logic;
 
-        dbg_head_idx_out   : out std_logic_vector(2 downto 0);
+        dbg_head_idx_out   : out std_logic_vector(7 downto 0);
         dbg_write_en       : out std_logic;
-        dbg_write_idx      : out std_logic_vector(2 downto 0);
-        dbg_write_data     : out std_logic_vector(66 downto 0);
+        dbg_write_idx      : out std_logic_vector(7 downto 0);
+        dbg_write_data     : out std_logic_vector(71 downto 0);
 
         dbg_minerA_found   : out std_logic;
         dbg_minerB_found   : out std_logic;
-        dbg_minerA_block   : out std_logic_vector(66 downto 0);
-        dbg_minerB_block   : out std_logic_vector(66 downto 0);
+        dbg_minerA_block   : out std_logic_vector(71 downto 0);
+        dbg_minerB_block   : out std_logic_vector(71 downto 0);
         dbg_winner_id      : out std_logic_vector(7 downto 0);
 
         dbg_wallet_deposit_req : out std_logic;
@@ -37,37 +37,37 @@ end entity;
 architecture Structural of top is
     
     signal cons_write_en       : std_logic := '0';
-    signal cons_write_idx      : std_logic_vector(2 downto 0) := (others => '0');
-    signal cons_write_data     : std_logic_vector(66 downto 0) := (others => '0');
+    signal cons_write_idx      : std_logic_vector(7 downto 0) := (others => '0');
+    signal cons_write_data     : std_logic_vector(71 downto 0) := (others => '0');
     signal cons_head_update    : std_logic := '0';
-    signal cons_new_head_idx   : std_logic_vector(2 downto 0) := (others => '0');
+    signal cons_new_head_idx   : std_logic_vector(7 downto 0) := (others => '0');
 
     signal tx_write_en         : std_logic := '0';
-    signal tx_write_idx        : std_logic_vector(2 downto 0) := (others => '0');
-    signal tx_write_data       : std_logic_vector(66 downto 0) := (others => '0');
+    signal tx_write_idx        : std_logic_vector(7 downto 0) := (others => '0');
+    signal tx_write_data       : std_logic_vector(71 downto 0) := (others => '0');
     signal tx_write_amount     : std_logic_vector(31 downto 0) := (others => '0');
     signal tx_write_type       : std_logic_vector(1 downto 0) := (others => '0');
     signal tx_head_update      : std_logic := '0';
-    signal tx_new_head_idx     : std_logic_vector(2 downto 0) := (others => '0');
+    signal tx_new_head_idx     : std_logic_vector(7 downto 0) := (others => '0');
 
     signal final_write_en      : std_logic;
-    signal final_write_idx     : std_logic_vector(2 downto 0);
-    signal final_write_data    : std_logic_vector(66 downto 0);
+    signal final_write_idx     : std_logic_vector(7 downto 0);
+    signal final_write_data    : std_logic_vector(71 downto 0);
     signal final_write_amount  : std_logic_vector(31 downto 0);
     signal final_write_type    : std_logic_vector(1 downto 0);
     signal final_head_update   : std_logic;
-    signal final_new_head_idx  : std_logic_vector(2 downto 0);
+    signal final_new_head_idx  : std_logic_vector(7 downto 0);
 
-    signal head_idx_out      : std_logic_vector(2 downto 0) := (others => '0');
-    signal current_head_idx  : std_logic_vector(2 downto 0) := (others => '0');
-    signal read_data_dummy   : std_logic_vector(66 downto 0) := (others => '0');
+    signal head_idx_out      : std_logic_vector(7 downto 0) := (others => '0');
+    signal current_head_idx  : std_logic_vector(7 downto 0) := (others => '0');
+    signal read_data_dummy   : std_logic_vector(71 downto 0) := (others => '0');
     signal current_difficulty : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
 
     signal minerA_found_sig   : std_logic := '0';
-    signal minerA_block_out   : std_logic_vector(66 downto 0) := (others => '0');
+    signal minerA_block_out   : std_logic_vector(71 downto 0) := (others => '0');
     signal minerA_id          : std_logic_vector(7 downto 0) := x"0A";
     signal minerB_found_sig   : std_logic := '0';
-    signal minerB_block_out   : std_logic_vector(66 downto 0) := (others => '0');
+    signal minerB_block_out   : std_logic_vector(71 downto 0) := (others => '0');
     signal minerB_id          : std_logic_vector(7 downto 0) := x"0B";
 
     signal winner_id_sig      : std_logic_vector(7 downto 0) := (others => '0');
@@ -205,7 +205,7 @@ begin
 
     process(clk)
         variable hdr : block_header_t;
-        variable next_idx_u : unsigned(2 downto 0);
+        variable next_idx_u : unsigned(7 downto 0);
     begin
         if rising_edge(clk) then
             if reset = '1' then

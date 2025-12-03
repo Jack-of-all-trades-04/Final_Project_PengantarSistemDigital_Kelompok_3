@@ -61,7 +61,7 @@ architecture Structural of top is
     signal head_idx_out      : std_logic_vector(2 downto 0) := (others => '0');
     signal current_head_idx  : std_logic_vector(2 downto 0) := (others => '0');
     signal read_data_dummy   : std_logic_vector(66 downto 0) := (others => '0');
-    signal current_difficulty : std_logic_vector(63 downto 0) := x"0FFFFFFFFFFFFFFF";
+    signal current_difficulty : std_logic_vector(63 downto 0) := x"FFFFFFFFFFFFFFFF";
 
     signal minerA_found_sig   : std_logic := '0';
     signal minerA_block_out   : std_logic_vector(66 downto 0) := (others => '0');

@@ -1,9 +1,8 @@
 library ieee; 
 use ieee.std_logic_1164.all; 
 use ieee.numeric_std.all;
-type block_array_t is array (0 to 7) of std_logic_vector(66 downto 0);
-type amount_array_t is array (0 to 7) of std_logic_vector(31 downto 0);
-type type_array_t   is array (0 to 7) of std_logic_vector(1 downto 0);
+use work.block_header.all;
+
 entity blockchain_storage is
     Port (
         clk       : in  std_logic;

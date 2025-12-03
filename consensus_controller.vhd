@@ -7,17 +7,17 @@ entity consensus_controller is
         clk      : in  std_logic;
         reset    : in  std_logic;
         minerA_found : in  std_logic;
-        minerA_block : in  std_logic_vector(66 downto 0);
+        minerA_block : in  std_logic_vector(71 downto 0);
         minerA_id    : in  std_logic_vector(7 downto 0);
         minerB_found : in  std_logic;
-        minerB_block : in  std_logic_vector(66 downto 0);
+        minerB_block : in  std_logic_vector(71 downto 0);
         minerB_id    : in  std_logic_vector(7 downto 0);
-        current_head_idx : in  std_logic_vector(2 downto 0);
+        current_head_idx : in  std_logic_vector(7 downto 0);
         write_en     : out std_logic;
-        write_idx    : out std_logic_vector(2 downto 0);
-        write_data   : out std_logic_vector(66 downto 0);
+        write_idx    : out std_logic_vector(7 downto 0);
+        write_data   : out std_logic_vector(71 downto 0);
         head_update  : out std_logic;
-        new_head_idx : out std_logic_vector(2 downto 0);
+        new_head_idx : out std_logic_vector(7 downto 0);
         winner_id    : out std_logic_vector(7 downto 0);
         wallet_deposit_req  : out std_logic;
         wallet_amount_out   : out std_logic_vector(31 downto 0);
@@ -29,7 +29,7 @@ end consensus_controller;
 
 architecture Behavioral of consensus_controller is
 
-    signal next_idx : unsigned(2 downto 0);
+    signal next_idx : unsigned(7 downto 0);
     signal block_reward : unsigned(31 downto 0) := to_unsigned(1, 32);
 
 begin
@@ -43,8 +43,8 @@ begin
             write_en      <= '0';
             head_update   <= '0';
             write_data    <= (others => '0');
-            write_idx     <= "000";
-            new_head_idx  <= "000";
+            write_idx <= (others => '0');
+            new_head_idx  <= (others => '0');
             winner_id     <= (others => '0');
 
             wallet_deposit_req <= '0';

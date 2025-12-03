@@ -7,14 +7,14 @@ entity miner is
     port(
         clk             : in  std_logic;
         reset           : in  std_logic;
-        prev_header_in  : in  std_logic_vector(66 downto 0);
-	current_idx_in  : in  std_logic_vector(2 downto 0);
+        prev_header_in  : in  std_logic_vector(71 downto 0);
+        current_idx_in  : in  std_logic_vector(7 downto 0);
 
         miner_id_in     : in  std_logic_vector(7 downto 0);
         target_bits     : in  std_logic_vector(63 downto 0);
 
         block_found     : out std_logic;
-        mined_block_out : out std_logic_vector(66 downto 0)
+        mined_block_out : out std_logic_vector(71 downto 0)
     );
 end entity;
 
@@ -28,7 +28,7 @@ architecture Behavioral of miner is
     signal timestamp   : unsigned(23 downto 0) := (others => '0');
 
     signal header_struct : block_header_t;
-    signal header_packed : std_logic_vector(66 downto 0);
+    signal header_packed : std_logic_vector(71 downto 0);
 
 begin
 

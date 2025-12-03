@@ -7,15 +7,6 @@ Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 
 -- Compiling entity wallet
 -- Compiling architecture Behavioral of wallet
 
-} {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd
-Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
--- Loading package STANDARD
--- Loading package TEXTIO
--- Loading package std_logic_1164
--- Loading package NUMERIC_STD
--- Compiling entity hash64
--- Compiling architecture rtl of hash64
-
 } {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/blockchain_storage.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
 -- Loading package STANDARD
@@ -25,6 +16,15 @@ Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 
 -- Loading package block_header
 -- Compiling entity blockchain_storage
 -- Compiling architecture rtl of blockchain_storage
+
+} {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/hash64.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity hash64
+-- Compiling architecture rtl of hash64
 
 } {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
@@ -59,6 +59,17 @@ Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 
 -- Compiling package block_header
 -- Compiling package body block_header
 -- Loading package block_header
+
+} {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/top_tb.vhd
+Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package block_header
+-- Compiling entity top_tb
+-- Compiling architecture sim of top_tb
+-- Loading entity top
 
 } {} {}} C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd {1 {vcom -work work -2002 -explicit -stats=none C:/Kuliah/PSD/Final_Project_PengantarSistemDigital_Kelompok_3/consensus_controller.vhd
 Model Technology ModelSim - Intel FPGA Edition vcom 2020.1 Compiler 2020.02 Feb 28 2020

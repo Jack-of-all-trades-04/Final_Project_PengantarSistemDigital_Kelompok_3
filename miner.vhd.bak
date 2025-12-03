@@ -8,6 +8,8 @@ entity miner is
         clk             : in  std_logic;
         reset           : in  std_logic;
         prev_header_in  : in  std_logic_vector(66 downto 0);
+	current_idx_in  : in  std_logic_vector(2 downto 0);
+
         miner_id_in     : in  std_logic_vector(7 downto 0);
         target_bits     : in  std_logic_vector(63 downto 0);
 
@@ -87,7 +89,7 @@ begin
                 if unsigned(hash_val) < unsigned(target_bits) then
                     found_reg <= '1';
 
-                    header_struct.prev_index    <= prev_header_in(66 downto 64);
+                    header_struct.prev_index    <= current_idx_in;
                     header_struct.miner_id      <= miner_id_in;
                     header_struct.timestamp     <= std_logic_vector(timestamp);
                     header_struct.nonce         <= std_logic_vector(nonce(15 downto 0));
