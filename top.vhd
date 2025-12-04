@@ -7,6 +7,7 @@ entity top is
     port(
         clk    : in  std_logic;
         reset  : in  std_logic;
+	difficulty_in : in std_logic_vector(63 downto 0);
 
         dbg_head_idx_out   : out std_logic_vector(7 downto 0);
         dbg_write_en       : out std_logic;
@@ -218,7 +219,7 @@ begin
                 tx_head_update <= '0';
                 tx_new_head_idx <= (others => '0');
             else
-                tx_write_en <= '0'; -- default off
+                tx_write_en <= '0';
                 tx_head_update <= '0';
 
                 timestamp_counter <= timestamp_counter + 1;
@@ -246,7 +247,7 @@ begin
                     tx_new_head_idx <= std_logic_vector(next_idx_u);
                     
                     tx_head_update <= '1';
-                    tx_write_en <= '1'; -- Trigger write
+                    tx_write_en <= '1';
                 end if;
             end if;
         end if;
@@ -256,6 +257,7 @@ begin
     dbg_write_en       <= final_write_en;
     dbg_write_idx      <= final_write_idx;
     dbg_write_data     <= final_write_data;
+    current_difficulty <= difficulty_in;
 
     dbg_minerA_found   <= minerA_found_sig;
     dbg_minerA_block   <= minerA_block_out;

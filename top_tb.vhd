@@ -13,6 +13,8 @@ architecture sim of top_tb is
     signal tx_req_in    : std_logic := '0';
     signal tx_from_in   : std_logic := '0';
     signal tx_amount_in : std_logic_vector(31 downto 0) := (others => '0');
+    
+    signal difficulty_in : std_logic_vector(63 downto 0) := (others => '1');
 
     signal dbg_head_idx_out       : std_logic_vector(7 downto 0);
     signal dbg_write_en           : std_logic;
@@ -38,6 +40,7 @@ begin
         port map(
             clk   => clk,
             reset => reset,
+            difficulty_in => difficulty_in,
             tx_req_in    => tx_req_in,
             tx_from_in   => tx_from_in,
             tx_amount_in => tx_amount_in,
@@ -65,11 +68,16 @@ begin
         reset <= '1';
         wait for 50 ns;
         reset <= '0';
-        report ">>> SYSTEM LIVE - INFINITE RUN <<<";
+        report ">>> SYSTEM LIVE  <<<";
+        
+        wait for 3000 ns;
+       
+	difficulty_in <= x"0000FFFFFFFFFFFF";
+        
         wait;
     end process;
 
-    process(clk)
+	process(clk)
         variable current_blk_struct : block_header_t;
         variable v_miner_id : integer;
         variable v_nonce    : integer;
@@ -105,24 +113,6 @@ begin
                        " | B=" & integer'image(to_integer(unsigned(dbg_walletB_balance)));
             end if;
         end if;
-    end process;
-
-    process
-    begin
-        wait until reset = '0';
-        
-        wait for 2000 ns; 
-
-        loop
-            wait for 2000 ns;
-            tx_req_in    <= '1';
-            tx_from_in   <= '0'; -- A
-            tx_amount_in <= std_logic_vector(to_unsigned(5, 32));
-            wait for 20 ns;
-            tx_req_in    <= '0';
-            tx_amount_in <= (others => '0');
-            
-        end loop;
     end process;
 
 end architecture;
